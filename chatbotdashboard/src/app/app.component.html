@@ -1,21 +1,56 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
-
-<router-outlet></router-outlet>
+<html>
+    <head>
+        <style>
+            #chat {
+                width: 40%;
+            }
+            #bot {
+                text-align: left;
+            }
+            #human {
+                text-align: center;
+                padding: 15px;
+                background-color: lightgreen;
+                border-radius: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div >
+            <input id="message" type="text" name="message" placeholder="Where would you like to go"><br>
+            <button value="Submit" onclick="classify()">Submit</button>
+            <table id="chat">
+                <tr><td id="bot"><p>Hi how can i help you</p></td></tr>
+            </table>
+        </div>
+    </body>
+    <script>
+        async function classify() {
+            var msg = document.getElementById("message")
+            console.log(msg.value)
+            var table = document.getElementById("chat")
+            var row = table.insertRow(0)
+            var cell = row.insertCell(0);
+            var cell = row.insertCell(1);
+            var cell = row.insertCell(2);
+            var cell = row.insertCell(3);
+            var p = document.createElement("p");
+            p.innerHTML = msg.value;
+            p.id = "human"
+            cell.appendChild(p);
+            const response = await fetch('http://localhost:9000/messages/classify', {
+                method: 'POST',
+                body: JSON.stringify({message: msg.value}), // string or object
+                headers: {
+                'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json(); //extract JSON from the http response
+            // do something with myJson
+            row = table.insertRow(0);
+            var cell = row.insertCell(0)
+            cell.id="bot"
+            cell.innerHTML = "I think you want to go to the " + result.subject + " page, click <a href='https://www.mijndomein.nl" + result.link + "'>here</a> to go to that page."
+        }
+    </script>
+</html>
